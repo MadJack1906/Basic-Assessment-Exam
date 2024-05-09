@@ -1,4 +1,5 @@
 import {useState} from "react";
+import axios from "axios";
 
 interface IUseLogin {
   email: string,
@@ -9,30 +10,35 @@ interface IUseLogin {
   login: Function
 }
 
+const loginErrorsInitialState = {
+  email: "",
+  password: "",
+}
+
 const useLogin = () => {
-  const [email, onChangeEmail] = useState();
-  const [password, onChangePassword] = useState();
-  const [errors, setErrors] = useState({
-    email: "",
-    password: "",
-  });
+  const [email, onChangeEmail] = useState("");
+  const [password, onChangePassword] = useState("");
+  const [errors, setErrors] = useState(loginErrorsInitialState);
 
-  const validateForm = () => {
-    let errors = {
-      email: "",
-      password: "",
-    };
+  const login = async () => {
+    setErrors(loginErrorsInitialState);
 
-    if (!email) errors.email = "Email is required";
-    if (!password) errors.password = "Password is required";
+    await axios.post(`${process.env.API_URL}/api/users/login`, {
+      email,
+      password,
+    }).then((res) => {
+      console.log(res.data.token)
+    }).catch((error) => {
+      const errors = error.response.data?.errors;
+      let errorBag = {};
 
-    setErrors(errors);
+      Object.keys(errors).forEach((key) => {
+        errorBag[key] = errors[key][0]
+      });
 
-    return Object.keys(errors).length === 0;
-  }
+      setErrors(errorBag)
+    });
 
-  const login = () => {
-    validateForm()
   }
 
   return {
