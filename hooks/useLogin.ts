@@ -1,5 +1,6 @@
 import {useState} from "react";
 import axios from "axios";
+import {useRouter} from "expo-router";
 
 interface IUseLogin {
   email: string,
@@ -19,6 +20,7 @@ const useLogin = () => {
   const [email, onChangeEmail] = useState("");
   const [password, onChangePassword] = useState("");
   const [errors, setErrors] = useState(loginErrorsInitialState);
+  const router = useRouter();
 
   const login = async () => {
     setErrors(loginErrorsInitialState);
@@ -27,7 +29,10 @@ const useLogin = () => {
       email,
       password,
     }).then((res) => {
-      console.log(res.data.token)
+      localStorage.setItem('token', res.data.token)
+      localStorage.setItem('user', res.data.user)
+
+      router.push('/home');
     }).catch((error) => {
       const errors = error.response.data?.errors;
       let errorBag = {};

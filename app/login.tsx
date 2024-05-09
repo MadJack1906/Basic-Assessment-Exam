@@ -69,6 +69,12 @@ export default function Login() {
           title={'Sign In'}
           onPress={login}/>
       </View>
+
+      <View>
+        <Text>
+          { localStorage.getItem('token')}
+        </Text>
+      </View>
     </SafeAreaView>
   );
 }
